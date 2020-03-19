@@ -78,7 +78,7 @@ quantile(train$LotArea)
 skewness(train$LotArea)
 kurtosis(train$LotArea)
 
-
+#----------------------------------------------
 
 
 
