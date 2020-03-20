@@ -1,10 +1,44 @@
 install.packages("dplyr")
 install.packages("moments")
+install.packages("cluster")
+install.packages("e1071")
+install.packages("mclust")
+install.packages("fpc")
+install.packages("NbClust")
+install.packages("factoextra")
+install.packages("tidyverse")
+install.packages("rpart")
+install.packages("caret")
+install.packages("tree")
+install.packages("rpart.plot")
+install.packages("randomForest")
+install.packages("ggplot2")
+install.packages("corrplot")
+
 
 library('dplyr')
 library('moments')
+library('cluster')
+library('e1071')
+library('mclust') 
+library('fpc')
+library('NbClust')
+library('factoextra')
+library("tidyverse")
+library("dplyr")
+library('rpart')
+library('caret')
+library('tree')
+library('rpart.plot')
+library('randomForest')
+library('ggplot2')
+library('corrplot')
+
+
+
 test <- read.csv("test.csv")
 train <- read.csv("train.csv")
+dataset <- read.csv("sample_submission.csv")
 
 variance <- function(x) sum((x-mean(x))^2)/(length(x)-1)
 
@@ -81,30 +115,93 @@ kurtosis(train$LotArea)
 #----------------------------------------------
 
 
+#Analisis de Grupos
+
+
+#-----------------------------------------------
+
+promedio <- mean(train$SalePrice)
+promedio
+
+caras <- promedio + (promedio*0.3)
+caras
+
+baratas <- promedio - (promedio*0.3)
+baratas
+
+#--------------5 y 6------------------
+
+x <- train[c(5, 81)]
+y <- train[c(18)]
+
+
+#Haciendo el split
+set.seed(123)
+
+sample <- sample(1:nrow(train),0.75*nrow(train))
+ttrain <- train[sample, ]
+ttest <- train[-sample, ]
+
+fitLMPW <- lm(LotArea~SalePrice, data = ttrain)
+
+summary(fitLMPW)
+
+'''
+La ecuacion es: 
+  
+$Precio = 'r round(fitLMPW$coefficients[2],2) 'Area + 'r round(fitLMPW$coefficients[1],2)'$
+
+'''{r}
+
+ggplot(data = ttrain, mapping = aes(x = SalePrice, y = LotArea)) + 
+  geom_point(color = "firebrick", size = 2) + 
+  geom_smooth(moethod = "lm", se = TRUE, color = "black")+
+  labs(title = "Precio ~ Area", x = "Precio", y = "Area")+
+  theme_bw() + theme(plot.title = element_text(hjust = 0.5))
 
 
 
+predL <- predict(fitLMPW, newData = ttest)
+
+head(predL)
+length(predL)
+
+head(fitLMPW$residuals)
 
 
 
+plot(fitLMPW)
 
 
 
+#--------------Multicolinealidad--------------------
+plot(train[c(81,5)], xlab = "Precio", ylab = "Area")
 
 
+matriz_cor <- cor(train[c(81, 5)])
+matriz_cor
+corrplot(matriz_cor)
 
 
+hist(fitLMPW$residuals)
+boxplot((fitLMPW$residuals))
 
 
+#-------Analisis del algortimo-----------------
+
+predMLM <- predict(fitLMPW, newdata = ttest[,c(81,5)])
+
+rmseFunc <- function(error)
+{
+  sqrt((mean(error^2)))
+}
+
+rmseFunc(predMLM)
 
 
+plot(ttest$SalePrice, col="blue")
+points(predMLM, col = "red")
 
 
-
-
-
-
-
-
-
+summary(ttest$SalePrice - predMLM)
 
