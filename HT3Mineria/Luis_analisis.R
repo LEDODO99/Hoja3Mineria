@@ -11,3 +11,4 @@ testData=read.csv("test.csv")
 trainData=read.csv("train.csv")
 trainData["PoolQC"]
 
+totalData <- trainData

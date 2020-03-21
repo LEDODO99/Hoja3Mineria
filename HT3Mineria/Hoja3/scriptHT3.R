@@ -134,7 +134,6 @@ baratas
 x <- train[c(5, 81)]
 y <- train[c(18)]
 
-
 #Haciendo el split
 set.seed(123)
 
@@ -142,16 +141,9 @@ sample <- sample(1:nrow(train),0.75*nrow(train))
 ttrain <- train[sample, ]
 ttest <- train[-sample, ]
 
-fitLMPW <- lm(LotArea~SalePrice, data = ttrain)
+fitLMPW <- lm(SalePrice~LotArea, data = ttrain)
 
 summary(fitLMPW)
-
-'''
-La ecuacion es: 
-  
-$Precio = 'r round(fitLMPW$coefficients[2],2) 'Area + 'r round(fitLMPW$coefficients[1],2)'$
-
-'''{r}
 
 ggplot(data = ttrain, mapping = aes(x = SalePrice, y = LotArea)) + 
   geom_point(color = "firebrick", size = 2) + 
@@ -205,3 +197,24 @@ points(predMLM, col = "red")
 
 summary(ttest$SalePrice - predMLM)
 
+#------Trabajo de model de regresion Lineal-----------
+matriz_cor<-cor(ttrain[,c(4,5,18,19,27,35,37,38,39,44,45,46,47,48,49,50,51,52,53,55,57,62,67,68,69,70,71,72,81)])
+round(matriz_cor,2)
+corrplot(matriz_cor)
+
+a<-lm(SalePrice~OverallQual+GrLivArea+X1stFlrSF, data=ttrain)
+summary(a)
+
+predic<-predict(a , newdata = ttest)
+
+rmseFunc <- function(error)
+{
+  sqrt((mean(error^2)))
+}
+
+rmseFunc(predic)
+plot(ttest$SalePrice, col="blue")
+points(predic, col = "red")
+
+summary(ttest$SalePrice-predic)
+b=as.data.frame(predic)
