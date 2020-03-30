@@ -218,3 +218,5 @@ points(predic, col = "red")
 
 summary(ttest$SalePrice-predic)
 b=as.data.frame(predic)
+
+plot(a$residuals)
